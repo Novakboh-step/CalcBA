@@ -1,5 +1,4 @@
-# making a functioning calculator application
-from tkinter import Tk, Frame, Button, Label, RIDGE
+from tkinter import *
 
 class Calculator:
     def __init__(self, root):
@@ -87,13 +86,22 @@ class Calculator:
     def calculate_result(self):
         try:
             result = str(eval(self.input_button))
+            self.save_operation(self.input_button, result)
             self.lblDisplay.config(text=result)
             self.input_button = result
         except Exception as e:
             self.lblDisplay.config(text="Error")
             self.input_button = ""
 
+    def save_operation(self, op, res):
+        with open("operations.txt", "a") as fileHandler:
+            fileHandler.writelines(f"{op}={res}\n")
+
+    def show_history(self):
+        with open("operations.txt") as fileHandler:
+            print(fileHandler.read())
+
 root = Tk()
 app = Calculator(root)
 root.mainloop()
-
+app.show_history()
