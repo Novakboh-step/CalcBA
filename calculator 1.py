@@ -4,36 +4,40 @@ class Calculator:
     def __init__(self, root):
         self.root = root
         self.root.title("Calculator")
-        self.root.geometry("615x695+410+110")
+        self.root.geometry("750x695+410+110")
         self.root.config(bg="cadet blue")
 
-        self.mainframe = Frame(self.root, bd=18, width=600, height=700, relief=RIDGE, bg="powder blue")
+        self.mainframe = Frame(self.root, bd=18, width=750, height=700, relief=RIDGE, bg="powder blue")
         self.mainframe.grid()
-        self.widgetframe = Frame(self.mainframe, bd=18, width=590, height=660, relief=RIDGE, bg="cadet blue")
+        self.widgetframe = Frame(self.mainframe, bd=18, width=740, height=660, relief=RIDGE, bg="cadet blue")
         self.widgetframe.grid()
 
-        self.lblDisplay = Label(self.widgetframe, width=30, height=2, bg="white", font=("arial", 20, "bold"), anchor="e")
-        self.lblDisplay.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
+        self.lblDisplay = Label(self.widgetframe, width=35, height=2, bg="white", font=("arial", 20, "bold"), anchor="e")
+        self.lblDisplay.grid(row=0, column=0, columnspan=5, padx=10, pady=10)
 
         self.input_button = ""
+        self.operation = ""
 
         # Row 1
         self.create_button("←", 1, 0, self.backspace)
         self.create_button("CE", 1, 1, self.clear_entry)
         self.create_button("C", 1, 2, self.clear_all)
         self.create_button("±", 1, 3, self.change_sign)
+        self.create_button("[", 1, 4, lambda: self.add_input("["))
 
         # Row 2
         self.create_button("7", 2, 0, lambda: self.add_input("7"))
         self.create_button("8", 2, 1, lambda: self.add_input("8"))
         self.create_button("9", 2, 2, lambda: self.add_input("9"))
         self.create_button("+", 2, 3, lambda: self.add_input("+"))
+        self.create_button("]", 2, 4, lambda: self.add_input("]"))
 
         # Row 3
         self.create_button("4", 3, 0, lambda: self.add_input("4"))
         self.create_button("5", 3, 1, lambda: self.add_input("5"))
         self.create_button("6", 3, 2, lambda: self.add_input("6"))
         self.create_button("-", 3, 3, lambda: self.add_input("-"))
+        self.create_button(",", 3, 4, lambda: self.add_input(","))
 
         # Row 4
         self.create_button("1", 4, 0, lambda: self.add_input("1"))
@@ -63,6 +67,8 @@ class Calculator:
     def add_input(self, value):
         self.input_button += value
         self.lblDisplay.config(text=self.input_button)
+        if value == "+" or value == "-":
+            self.operation = value
 
     def backspace(self):
         self.input_button = self.input_button[:-1]
@@ -85,7 +91,19 @@ class Calculator:
 
     def calculate_result(self):
         try:
-            result = str(eval(self.input_button))
+            if (self.input_button[0] == "["):
+                if self.operation == "+":
+                    matr = self.input_button[1:-1].split("]+[")
+                    matr1 = matr[0].split(",")
+                    matr2 = matr[1].split(",")
+                    result = f"[{float(matr1[0]) + float(matr2[0])}, {float(matr1[1]) + float(matr2[1])}, {float(matr1[2]) + float(matr2[2])}, {float(matr1[3]) + float(matr2[3])}]"
+                elif self.operation == "-":
+                    matr = self.input_button[1:-1].split("]-[")
+                    matr1 = matr[0].split(",")
+                    matr2 = matr[1].split(",")
+                    result = f"[{float(matr1[0]) - float(matr2[0])}, {float(matr1[1]) - float(matr2[1])}, {float(matr1[2]) - float(matr2[2])}, {float(matr1[3]) - float(matr2[3])}]"
+            else:
+                result = str(eval(self.input_button))
             self.save_operation(self.input_button, result)
             self.lblDisplay.config(text=result)
             self.input_button = result
